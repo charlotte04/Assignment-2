@@ -1,0 +1,215 @@
+\documentclass{article}
+
+\begin{document}
+
+
+\title {United States School Statistics (100 Largest Cities): Chicago, Illinois} 
+\author {Bin Fan 
+\\ School of Information Technology 
+\\ Illinois State University
+\\
+\texttt{bfan@ilstu.edu}}
+\date{\today} 
+\maketitle
+
+
+\section{Introduction}
+This paper will be looking at annual school statistics in Chicago, Illinois which is one of the 100 largest cities in the National Center for Education Statistics database. School statistics include the total number of operating schools, the total number of students, and the total number of teachers. The statistics include different subcategories such as charter and non-charter schools, new operating schools, continuously operating schools, and closed schools. It also includes the number of students and the teachers within each of those subcategories.
+\\\\
+This paper will focus on the number of operating schools, the students, and the teachers in regular operating schools from school years ending 2001 to 2011. Operating schools indicate those schools that provided service within the reported school year.
+\\\\
+Data will be obtained from Quandl, a data platform that collects data from various sources. Data will be explored in greater detail after it is obtained. Tables and graphs will be used as a visual description of the results gathered from analyzing the data.
+
+\section{Data}
+
+This section will conduct an in-depth exploration of the data, and will display detailed information about the dataset. Data will need to be obtained before being analyzed. Data was downloaded from Quandl as a csv format, then was imported to R Studio and stored into a data frame called schoolData. Not all the data was needed. Therefore, further cleaning was required on the dataset.
+\\\\
+Only the date, the total number of schools, the total number of students and the total number of teachers were needed. Required data was selected and stored into a data frame called school.new and was assigned new column names, dates, schools, students, and teachers, to the appropriate columns within the school.new data frame.
+\\\\
+Code Chunk 1: Procedures of obtaining data, storing data, and cleaning data
+<<>>=
+# We will be using ggplot2 to draw the graph
+library(ggplot2)
+
+# We will be using gridExtra to combine graphs
+library(gridExtra)
+
+# Import data from a file
+schoolData <- read.csv(file="Schools.csv", header=TRUE, sep=",")
+
+# Cleaning the data, only needs the date, 
+## total schools, total students and total teachers columns
+# There were 11 rows in the data set, 
+## but only the first 4 columns were needed
+school.new<-schoolData[1:11,1:4]
+
+# Assign new column names to the data
+colnames(school.new) <- c("date", "schools", "students", "teachers")
+@
+
+The data type of the whole dataset is data frame.
+\\\\
+Code Chunk 2: Display the data type of dataset
+<<>>=
+# Display the data type of the whole dataset
+class(school.new)
+@
+
+The data type of date data needed to be changed from Factor to Date before displaying the structure of the whole dataset.
+\\\\
+Code Chunk 3: Change the data type of date
+<<>>=
+# Change the data type of date data from factor to Date
+school.new$date<-as.Date(as.character(school.new$date))
+@
+
+The dataset, school.new, is a data frame that contains four variables, including; date, schools, students, and teachers, with eleven objects. The structure command also displays the data type and structure format for each variable. The structure of the whole dataset is displayed as followed:
+\\\\
+Code Chunk 4: Display the structure of dataset
+<<>>=
+# Display the structure of the whole data set
+str(school.new)
+@
+
+The summary of the dataset displays the minimum, first quarter, median, mean, third quarter, and maximum value of each variable. The summary is displayed as followed:
+\\\\
+Code Chunk 5 / Table 1: Summary of dataset
+<<>>=
+# Display the summary of the whole data set
+summary(school.new)
+@
+
+
+\subsection{Data Definition}
+
+The first variable of the school.new dataset is called date. It is shown as the first column in school.new dataset. It displays the last date of the year in order to indicate the total number of schools, students, and teachers for each year. The data needs to be up to date. The minimum allowable value for this variable is 2000-12-31 and the maximum allowable value is 2013-12-31.
+\\\\
+The data type of this variable is Date. The structure format is in Year-Month-Day and is displayed as followed:
+\\\\
+Code Chunk 6: Display the data type and structure of date
+<<>>=
+# Display the data type of the date data
+class(school.new$date)
+
+# Display the structure of the date data
+str(school.new$date)
+@
+
+The second variable of the school.new dataset is called students. It is shown as the third column in school.new data set. It lists the total number of students based on the date. The minimum allowable value for this variable is 0. According to the United States Census, the estimate population of Chicago is 2,718,782 in 2013. There were 1,030,076 households in Chicago, and around 3 people per household (United States Census). Giving an assumption that one household contains one student, the maximum allowable value for this variable will be 1,030,076. Assumption is made based on the number of households and number of people per household.
+\\\\
+The data type is numeric and the structure is shown in number format. The structure format of this variable is displayed as followed:
+\\\\
+Code Chunk 7: Display the data type and structure of students
+<<>>=
+# Display the data type of the students data
+class(school.new$students)
+
+# Display the structure of the students data
+str(school.new$students)
+@
+
+The third variable of the school.new dataset is called schools. It is shown as the second column in school.new data set. It lists the total number of schools based on the date. The minimum allowable value for this variable is 0. Giving an assumption that one school can have 1,000 students, and the maximum allowable value for number of students is 1,030,076, the maximum allowable value for the number of schools is 1,030. Assumption is made based on maximum allowable value of the number of students.
+\\\\
+The data type is numeric and the structure is shown in number format. The structure format of this variable is displayed as followed:
+\\\\
+Code Chunk 8: Display the data type and structure of schools
+<<>>=
+# Display the data type of the schools data
+class(school.new$schools)
+
+# Display the structure of the schools data
+str(school.new$schools)
+@
+
+The last variable of the school.new dataset is called teachers. It is shown as the fourth column in school.new data set. It lists the total number of teachers based on the date. The minimum allowable value for this variable is 0. Giving an assumption that one teacher can teach 30 students, and the maximum allowable value for number of students is 1,030,076, the maximum allowable value for the number of teachers is 34,336. Assumption was made based on the maximum allowable value of the number of students, and the regular size of class in high schools and colleges.
+\\\\
+The data type of this variable is numeric. The structure is shown in number format, and is displayed as followed:
+\\\\
+Code Chunk 9: Display the data type and structure of teachers
+<<>>=
+# Display the data type of the teachers data
+class(school.new$teachers)
+
+# Display the structure of the teachers data
+str(school.new$teachers)
+@
+
+
+\section{Result}
+
+This section will display the result after analyzing the data.
+\\\\
+Code Chunk 10 / Table 2: School Statistics in Chicago, Illinois
+<<>>=
+# Display all the data
+school.new
+@
+
+This table shows the total number of schools, total number of students, and total number of teachers based on the date. The change of the total number of schools was correlated to the change of the total number of students and that of teachers. For example, the decrease of the total number of schools tended to relate to the decrease of the total number of teachers and that of students. However, the change of the total number of schools was not as big as the change of the total number of students or that of teachers. The following graphs can better describe the relationship visually.
+\\\\\\
+Code Chunk 11 / Figure 1: Number of Schools
+<<out.height='10cm'>>=
+# Use ggplot command from ggplot2 package to draw a line graph 
+## that shows the total number of schools based on the date
+# data is obtained from school.new data frame
+# x axis shows the date, y axis shows the number of schools
+# all data points in this graph need to be connected, so group=1
+# display a line graph with points
+ggplot(data=school.new, aes(x=date, y=schools, group=1)) + 
+  geom_line() + geom_point()
+@
+
+This figure shows the total number of schools based on the dates. It indicates that the total number of schools in Chicago area is increasing since 2002. There was a slide from 600 in 2007 to 597 in 2008. It then went back up to 600 again in 2009, and kept increasing steadily since 2008. The total number of schools has reached 620 in 2012.
+\\\\\\
+Code Chunk 12 / Figure 2: Number of Teachers
+<<out.height='10cm'>>=
+# Use ggplot command from ggplot2 package to draw a line graph 
+## that shows the total number of teachers based on the date
+# data is obtained from school.new data frame
+# x axis shows the date, y axis shows the number of teachers
+# all data points in this graph need to be connected, so group=1
+# display a line graph with points
+ggplot(data=school.new, aes(x=date, y=teachers, group=1)) + 
+  geom_line() + geom_point()
+@
+
+This figure shows the total number of teachers based on the dates. It indicates that the total number of teachers in the Chicago area varies throughout the years. It had a small drop to about 21,262 teachers in 2005. The total number of teachers reaches the peak number of 24,659 in 2007, but then had a dramatic drop to 18,715 in 2008.
+\\\\
+Referring back the Figure 1, this indicates that the decrease of the total number of teachers in 2008 may be a result of the decrease of total number of schools in 2008.
+\\\\
+The total number of teachers has increased steadily since 2008.
+\\\\\\
+Code Chunk 13 / Figure 3: Number of Students
+<<out.height='10cm'>>=
+# Use ggplot command from ggplot2 package to draw a line graph 
+## that shows the total number of students based on the date
+# data is obtained from school.new data frame
+# x axis shows the date, y axis shows the number of students
+# all data points in this graph need to be connected, so group=1
+# display a line graph with points
+ggplot(data=school.new, aes(x=date, y=students, group=1)) + 
+  geom_line() + geom_point()
+@
+
+The total number of students started to decrease since 2004. It reached 399,013 in 2009. The decrease of the total number of students may be the cause for the decrease of total number of schools and that of teachers in 2009. The total number of students went back up to 420,193 in 2010. It then had a slight decrease in 2011, correlated to the slight decrease of the total number of teachers in 2012.
+
+
+\section{Conclusion}
+
+Code Chunk 14 / Figure 4: The combining graphs
+<<>>=
+# Assign names to each graphs
+schoolsPlot<-ggplot(data=school.new, aes(x=date, y=schools, group=1)) + 
+  geom_line() + geom_point()
+teachersPlot<-ggplot(data=school.new, aes(x=date, y=teachers, group=1)) + 
+  geom_line() + geom_point()
+studentsPlot<-ggplot(data=school.new, aes(x=date, y=students, group=1)) + 
+  geom_line() + geom_point()
+
+# Use grid.arrange command from the gridExtra package to combine the graphs
+grid.arrange(schoolsPlot, teachersPlot, studentsPlot)
+@
+
+This figure displays all three graphs together. It is clear to view the correlation among these graphs, especially the correlation between the number of teachers and the number of students.
+
+\end{document}
